@@ -1,0 +1,35 @@
+{
+  "name": "pangram-tester",
+  "version": "0.1.0",
+  "description": "Analyzes pangram sentences as you type.",
+  "scripts": {
+    "test": "cspell-cli lint .",
+    "start": "npx live-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1j01/pangram-tester.git"
+  },
+  "keywords": [
+    "pangram",
+    "pangrams",
+    "pangrammatic",
+    "sentence",
+    "words",
+    "letters",
+    "alphabet",
+    "alphabetical",
+    "typography",
+    "grammar",
+    "language",
+    "english"
+  ],
+  "author": "Isaiah Odhner <isaiah.odhner@gmail.com> (https://isaiahodhner.io)",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/1j01/pangram-tester/issues"
+  },
+  "homepage": "https://github.com/1j01/pangram-tester#readme",
+  "devDependencies": {
+  }
+}
