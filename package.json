@@ -4,7 +4,9 @@
   "description": "Analyzes pangram sentences as you type.",
   "scripts": {
     "test": "cspell-cli lint .",
-    "start": "npx live-server"
+    "start": "npx live-server",
+    "open-chatgpt": "google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-dev-profile --no-default-browser-check https://chat.openai.com/c/f1ff0d8b-c72a-43df-abcb-728fd3f64d2f",
+    "import-commits": "node from_chatgpt.js"
   },
   "repository": {
     "type": "git",
@@ -31,5 +33,7 @@
   },
   "homepage": "https://github.com/1j01/pangram-tester#readme",
   "devDependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "puppeteer-core": "^20.7.2"
   }
 }
