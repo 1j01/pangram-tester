@@ -34,15 +34,26 @@ async function commitCodeBlocks() {
   const html = await fs.readFile(conversationFile, 'utf-8');
   const $ = cheerio.load(html);
   const $codeBlocks = $(`code.language-${codeTargetLanguage}`);
-  console.log(`Found ${$codeBlocks.length} ${codeTargetLanguage} code blocks`);
+  const $messageBodies = $(".prose");
+  console.log(`Found ${$codeBlocks.length} ${codeTargetLanguage} code blocks, ${$messageBodies.length} messages`);
   // Commit each code block with its surrounding text as the commit message
   for (const codeElement of $codeBlocks) {
     const code = $(codeElement).text();
     const $message = $(codeElement).closest('.prose');
     // elide the code block (and outer pre element, which includes a copy button) from the commit message
-    const $placeholder = $("<span></span>").text("\n<code>\n");
+    const $placeholder = $("<span></span>").text("\n\n<code>\n\n");
     $(codeElement).closest('pre').replaceWith($placeholder);
-    const $previousMessage = $message.closest(".group").prev().find('.prose');
+    // const $previousMessage = $message.closest(".group").prev().find('.prose');
+    const messageIndex = $messageBodies.index($message[0]);
+    if (messageIndex === 0) {
+      console.error('WARNING: Skipping first message. Note that code sent as part of a prompt is not handled correctly yet. It may be skipped (like this) or mislabeled as a ChatGPT response.');
+      continue;
+    }
+    if (messageIndex === -1) {
+      console.error('ERROR: Could not find message index');
+      continue;
+    }
+    const $previousMessage = $($messageBodies[messageIndex - 1]);
     const prompt = $previousMessage.text().trim();
     const responseMinusCode = $message.text().trim();
     const message = `Commit with ChatGPT\n\nChatGPT prompt:\n${formatQuote(prompt)}\n\nChatGPT response:\n${formatQuote(responseMinusCode)}`;
