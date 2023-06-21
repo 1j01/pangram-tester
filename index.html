@@ -123,8 +123,8 @@
       var lettersFound = [];
       var lettersMissing = [];
 
-      sentenceOutput.innerHTML = ""; // Clear previous output
-      statusOutput.innerHTML = ""; // Clear previous status
+      sentenceOutput.textContent = ""; // Clear previous output
+      statusOutput.textContent = ""; // Clear previous status
       suggestionList.innerHTML = ""; // Clear previous suggestions
 
       if (sentence.trim() === "") {
@@ -159,7 +159,12 @@
       if (missingLettersCount === 0) {
         statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
       } else {
-        statusOutput.innerHTML = "<span class='missing-letters'>Missing " + missingLettersCount + " letter(s): " + lettersMissing.join(" ") + "</span>";
+        var missingLettersText = "Missing " + missingLettersCount + " letter(s): ";
+        var missingLettersSpan = document.createElement("span");
+        missingLettersSpan.className = "missing-letters";
+        missingLettersSpan.textContent = missingLettersText;
+        statusOutput.appendChild(missingLettersSpan);
+        statusOutput.appendChild(document.createTextNode(lettersMissing.join(" ")));
       }
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
@@ -172,9 +177,8 @@
         var formattedWord = suggestion.word;
         suggestion.highlightedLetters.forEach(function (letter) {
           var regex = new RegExp(letter, 'i');
-          formattedWord = formattedWord.replace(regex, function (match) {
-            return createHighlightSpan(match).outerHTML;
-          });
+          var span = createHighlightSpan(letter);
+          formattedWord = formattedWord.replace(regex, span.outerHTML);
         });
         li.innerHTML = formattedWord;
         suggestionList.appendChild(li);
