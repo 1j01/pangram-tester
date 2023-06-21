@@ -36,9 +36,29 @@ async function commitCodeBlocks() {
   const $ = cheerio.load(html);
   const $codeBlocks = $(`code.language-${codeTargetLanguage}`);
   console.log(`Found ${$codeBlocks.length} ${codeTargetLanguage} code blocks`);
-  // Make a commit for each code block, with the prompt and response in the commit message
+  // Make a commit for each new code block, with the prompt and response in the commit message
+  let foundLatestCommitted = false;
+  let latestCode;
+  try {
+    latestCode = await fs.readFile(codeTargetFile, 'utf-8');
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      throw err;
+    }
+    // No code found, so this will be the first commit
+    foundLatestCommitted = true;
+  }
   for (const codeElement of $codeBlocks) {
     const code = $(codeElement).text();
+    if (code === latestCode) {
+      foundLatestCommitted = true;
+      continue;
+    }
+    if (!foundLatestCommitted) {
+      // Skip code blocks until we find the code in the working directory (i.e. latest commit)
+      continue;
+    }
+
     const $message = $(codeElement).closest('.prose');
     if ($message.length === 0) {
       // This is a code block in a prompt, not a response (or the HTML structure has changed)
@@ -85,6 +105,10 @@ async function commitCodeBlocks() {
         resolve();
       });
     });
+  }
+  if (!foundLatestCommitted) {
+    console.error('Could not find current code in the chat history.');
+    process.exit(1);
   }
 }
 
