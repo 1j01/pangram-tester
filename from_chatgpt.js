@@ -7,6 +7,9 @@ const fs = require('fs/promises');
 const cheerio = require('cheerio');
 const child_process = require('child_process');
 
+const dryRun = process.argv.includes('--dry-run');
+const fromCache = process.argv.includes('--from-cache');
+
 const conversationFile = 'chatgpt_conversation.html';
 const codeTargetFile = 'index.html';
 const codeTargetLanguage = 'html'; // .language-<codeTargetLanguage> class
@@ -14,8 +17,6 @@ const commitMessageFile = 'commit_message.txt';
 
 async function exportChatHistory() {
   // Export the HTML content of the ChatGPT page to a file
-  // This step could be cached, but it's fast enough to just do it every time
-  // I'll add add a --from-cache option when I don't feel like logging in
   const browser = await puppeteer.connect({ browserURL: 'http://localhost:9222/json' });
   const pages = await browser.pages();
   const chatPage = pages.find((page) => page.url().startsWith('https://chat.openai.com/'));
@@ -47,6 +48,10 @@ async function commitCodeBlocks() {
     const responseMinusCode = $message.text().trim();
     const message = `Commit with ChatGPT\n\nChatGPT prompt:\n${formatQuote(prompt)}\n\nChatGPT response:\n${formatQuote(responseMinusCode)}`;
     
+    if (dryRun) {
+      console.log(`Dry run: would commit code:\n${code}\n\nwith message:\n${message}`);
+      continue;
+    }
     await fs.writeFile(codeTargetFile, code);
     await fs.writeFile(commitMessageFile, message);
     await new Promise((resolve, reject) => {
@@ -73,7 +78,9 @@ async function commitCodeBlocks() {
 }
 
 async function updateRepository() {
-  await exportChatHistory();
+  if (!fromCache) {
+    await exportChatHistory();
+  }
   await commitCodeBlocks();
 }
 
