@@ -139,7 +139,20 @@
         statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
       } else {
         statusOutput.innerHTML = "<span class='missing-letters'>Missing " + missingLettersCount + " letter(s): " + lettersMissing.join(" ") + "</span>";
-        var suggestions = generateSuggestions(lettersMissing);
+        generateSuggestions(lettersMissing, suggestionList);
+      }
+
+      statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
+    }
+
+    function generateSuggestions(lettersMissing, suggestionList) {
+      var regex = buildRegex(lettersMissing);
+
+      var worker = new Worker("worker.js");
+      worker.postMessage({ dictionary: dictionary, regex: regex });
+
+      worker.onmessage = function (e) {
+        var suggestions = e.data;
         suggestions.forEach(suggestion => {
           var listItem = document.createElement("li");
           var suggestionText = document.createTextNode(suggestion.word);
@@ -154,44 +167,19 @@
             });
           }
         });
-      }
-
-      statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
+      };
     }
 
-    function generateSuggestions(lettersMissing) {
-      var suggestions = [];
+    function buildRegex(lettersMissing) {
+      var regexString = "";
 
-      for (var i = 0; i < dictionary.length; i++) {
-        var word = dictionary[i];
-        var wordLetters = word.toLowerCase().split("");
-        var matchedLetters = [];
-        var remainingLetters = lettersMissing.slice();
-
-        for (var j = 0; j < wordLetters.length; j++) {
-          var letter = wordLetters[j];
-          var index = remainingLetters.indexOf(letter);
-          if (index !== -1) {
-            matchedLetters.push(letter);
-            remainingLetters.splice(index, 1);
-          }
-        }
-
-        if (matchedLetters.length > 0) {
-          suggestions.push({
-            word: word,
-            highlightedLetters: matchedLetters
-          });
-        }
+      if (lettersMissing.length > 10) {
+        regexString = ".*" + lettersMissing.join(".*") + ".*";
+      } else {
+        regexString = ".*[" + lettersMissing.join("") + "].*";
       }
 
-      suggestions.sort((a, b) => {
-        var aScore = a.highlightedLetters.length - a.word.length;
-        var bScore = b.highlightedLetters.length - b.word.length;
-        return bScore - aScore;
-      });
-
-      return suggestions;
+      return new RegExp(regexString);
     }
 
     // Load the dictionary when the page is loaded
