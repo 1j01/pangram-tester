@@ -90,6 +90,7 @@
   <script>
     // Load the dictionary file once
     var dictionary = [];
+    var suggestionList = document.getElementById("suggestionList");
 
     function loadDictionary() {
       var xhr = new XMLHttpRequest();
@@ -108,7 +109,6 @@
       var sentenceInput = document.getElementById("sentenceInput");
       var sentenceOutput = document.getElementById("sentenceOutput");
       var statusOutput = document.getElementById("statusOutput");
-      var suggestionList = document.getElementById("suggestionList");
 
       var sentence = sentenceInput.value;
       var lowercaseSentence = sentence.toLowerCase();
@@ -162,7 +162,7 @@
 
       // Generate word suggestions
       var suggestions = suggestWords(lettersMissing, lettersFound);
-      suggestions.forEach(function (word) {
+      suggestions.slice(0, 30).forEach(function (word) {
         var li = document.createElement("li");
         li.textContent = word;
         suggestionList.appendChild(li);
