@@ -104,6 +104,13 @@
 
     loadDictionary();
 
+    function createHighlightSpan(text) {
+      var span = document.createElement("span");
+      span.textContent = text;
+      span.className = "highlight";
+      return span;
+    }
+
     function analyzeSentence() {
       var sentenceInput = document.getElementById("sentenceInput");
       var sentenceOutput = document.getElementById("sentenceOutput");
@@ -130,10 +137,7 @@
         var char = lowercaseSentence.charAt(i);
         if (alphabet.includes(char) && !lettersFound.includes(char)) {
           lettersFound.push(char);
-          var span = document.createElement("span");
-          span.textContent = sentence.charAt(i);
-          span.className = "highlight";
-          sentenceOutput.appendChild(span);
+          sentenceOutput.appendChild(createHighlightSpan(sentence.charAt(i)));
         } else {
           sentenceOutput.appendChild(document.createTextNode(sentence.charAt(i)));
         }
@@ -162,9 +166,17 @@
 
       // Generate word suggestions
       var suggestions = suggestWords(lettersMissing, lettersFound);
-      suggestions.forEach(function (word) {
+      var suggestionLimit = 30;
+      suggestions.slice(0, suggestionLimit).forEach(function (suggestion) {
         var li = document.createElement("li");
-        li.textContent = word;
+        var formattedWord = suggestion.word;
+        suggestion.highlightedLetters.forEach(function (letter) {
+          var regex = new RegExp(letter, 'i');
+          formattedWord = formattedWord.replace(regex, function (match) {
+            return createHighlightSpan(match).outerHTML;
+          });
+        });
+        li.innerHTML = formattedWord;
         suggestionList.appendChild(li);
       });
     }
@@ -223,16 +235,7 @@
         uniqueSuggestions.push(suggestion);
       });
 
-      // Format suggestions for display
-      var formattedSuggestions = uniqueSuggestions.map(function (suggestion) {
-        var formattedWord = suggestion.word;
-        suggestion.highlightedLetters.forEach(function (letter) {
-          formattedWord = formattedWord.replace(new RegExp(letter, 'i'), "<span class='highlight'>" + letter + "</span>");
-        });
-        return formattedWord;
-      });
-
-      return formattedSuggestions;
+      return uniqueSuggestions;
     }
   </script>
 </body>
