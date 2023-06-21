@@ -143,5 +143,5 @@ async function updateRepository() {
 }
 
 updateRepository()
-  .then(() => console.log('Repository updated successfully!'))
+  .then(() => console.log(dryRun ? 'Dry run complete.' : 'Done.'))
   .catch((err) => console.error('Error occurred:', err));
