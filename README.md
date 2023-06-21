@@ -28,6 +28,7 @@ Export code blocks from a ChatGPT conversation into the git commit history of a 
 - This works by matching the current code to the chat history, and ignoring messages earlier than (or matching) the current code.
 - If you create a new conversation, and paste in your current code, it should work naturally (as long as you update the conversation ID), since it doesn't need to line up the whole commit history with a whole chat history.
 - If it doesn't find the current code in the chat history, it will abort with an error message. You can either paste your updated code into the chat, or copy the latest code from the chat into the file and look at the git diff to see what has changed. (The git diff will likely be reversed; if the colors bother you you could commit it, revert it, and look at the diff of the reverted commit. Or probably with some git flag.)
+- Unlike manually copying and pasting, as your code gets longer, you don't have to scroll up more and more to reach the copy button. This is just a minor UI issue with the chat interface, but it's nice to not have to deal with it. You can just let it scroll down and watch it generate, then run the command to commit it.
 
 Caveats:
 - It can only handle single-file applications. You must specify the file name and language code.
