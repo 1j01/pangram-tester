@@ -70,13 +70,17 @@
       var statusOutput = document.getElementById("statusOutput");
 
       var sentence = sentenceInput.value;
-      var lowercaseSentence = sentence.toLowerCase();
+      var lowercaseSentence = sentence.toLowerCase().replace(/[^a-z]/g, "");
       var alphabet = "abcdefghijklmnopqrstuvwxyz";
       var lettersFound = [];
       var lettersMissing = [];
 
       sentenceOutput.innerHTML = ""; // Clear previous output
       statusOutput.innerHTML = ""; // Clear previous status
+
+      if (sentence.trim() === "") {
+        return; // If input is empty, leave the results empty
+      }
 
       for (var i = 0; i < lowercaseSentence.length; i++) {
         var char = lowercaseSentence.charAt(i);
@@ -99,13 +103,13 @@
         }
       }
 
-      var sentenceLettersCount = lettersFound.length;
+      var sentenceLettersCount = lowercaseSentence.length;
       var missingLettersCount = lettersMissing.length;
 
       if (missingLettersCount === 0) {
         statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
       } else {
-        statusOutput.innerHTML = "<span class='missing-letters'>Missing letters: " + lettersMissing.join(", ") + "</span>";
+        statusOutput.innerHTML = "<span class='missing-letters'>Missing " + missingLettersCount + " letters: " + lettersMissing.join(" ") + "</span>";
       }
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
