@@ -93,9 +93,11 @@
           span.textContent = sentence.charAt(i);
           span.className = "highlight";
           sentenceOutput.appendChild(span);
-          sentenceLettersCount++;
         } else {
           sentenceOutput.appendChild(document.createTextNode(sentence.charAt(i)));
+        }
+        if (alphabet.includes(char)) {
+          sentenceLettersCount++;
         }
       }
 
