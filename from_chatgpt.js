@@ -36,15 +36,26 @@ async function commitCodeBlocks() {
   const $ = cheerio.load(html);
   const $codeBlocks = $(`code.language-${codeTargetLanguage}`);
   console.log(`Found ${$codeBlocks.length} ${codeTargetLanguage} code blocks`);
-  // Commit each code block with its surrounding text as the commit message
+  // Make a commit for each code block, with the prompt and response in the commit message
   for (const codeElement of $codeBlocks) {
     const code = $(codeElement).text();
     const $message = $(codeElement).closest('.prose');
+    if ($message.length === 0) {
+      // This is a code block in a prompt, not a response (or the HTML structure has changed)
+      // TODO: make a commit for this case too, but with a different message,
+      // as this implies user-supplied code.
+      continue;
+    }
     // elide the code block (and outer pre element, which includes a copy button) from the commit message
     const $placeholder = $('<span></span>').text('\n\n<code>\n\n');
     $(codeElement).closest('pre').replaceWith($placeholder);
-    const $previousMessage = $message.closest('.group').prev().find('.prose'); // TODO: FIXME: does not find anything!
-    const prompt = $previousMessage.text().trim();
+    // Responses have .markdown.prose elements, prompts have plain div elements
+    const $promptMessage = $message.closest('.group').prev().find('div:not([class])');
+    if ($promptMessage.length === 0) {
+      // The HTML structure has changed
+      console.error('Could not find prompt message for code block:', code);
+    }
+    const prompt = $promptMessage.text().trim();
     const responseMinusCode = $message.text().trim();
     const message = `Commit with ChatGPT\n\nChatGPT prompt:\n${formatQuote(prompt)}\n\nChatGPT response:\n${formatQuote(responseMinusCode)}`;
     
