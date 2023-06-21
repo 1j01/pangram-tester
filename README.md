@@ -1,7 +1,39 @@
 
-# Pangram Tester
+# Pangram Tester (and ✨ChatGPT auto-commit)
 
 Analyzes pangram sentences as you type.
+
+A pangram is a sentence that uses every letter of the alphabet at least once, such as "The quick brown fox jumps over the lazy dog."
+
+Features:
+- Highlights unique letters in the sentence (the first occurrence of each letter)
+- Lists (and counts) missing letters
+- Gives a count of the total number of letters in the sentence
+- Updates as you type
+
+## Methodology
+
+I just used ChatGPT to write this app 100%.
+
+I did use my programming expertise to formulate the prompts and to give some feedback on the code, but I didn't write any of the code myself.
+
+It's interesting that it was easier to create this application using AI than to search the web for an existing solution of comparable quality.
+
+## ChatGPT auto-commit
+
+Export code blocks from a ChatGPT conversation into the git commit history of a target file.
+
+- If you make a simple app using ChatGPT, copying its results to JS Fiddle or CodePen, you can use this to automatically commit the results at each step.
+- You can continue the conversation, re-run the script, and it will commit the new code without duplicating commits.
+- This works by matching the current code to the chat history, and ignoring messages earlier than (or matching) the current code.
+- If you create a new conversation, and paste in your current code, it should work naturally (as long as you update the conversation ID), since it doesn't need to line up the whole commit history with a whole chat history.
+- If it doesn't find the current code in the chat history, it will abort with an error message. You can either paste your updated code into the chat, or copy the latest code from the chat into the file and look at the git diff to see what has changed. (The git diff will likely be reversed; if the colors bother you you could commit it, revert it, and look at the diff of the reverted commit. Or probably with some git flag.)
+
+Caveats:
+- It can only handle single-file applications. You must specify the file name and language code.
+- If you include code (of the same language) in a prompt, it will be confused currently. (TODO: commit user-supplied code with a different message)
+- This does not use the OpenAI API (TODO), but rather scrapes the chat history from the web page. This is fragile and will definitely break in the future.
+- It does not preserve time/date information. (This should be easy to add, once it uses the API, assuming such information is provided.)
 
 ## License
 
