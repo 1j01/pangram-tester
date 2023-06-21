@@ -92,7 +92,8 @@ async function commitCodeBlocks() {
     }
     const prompt = $promptMessage.text().trim();
     const responseMinusCode = $message.text().trim();
-    const message = `Commit with ChatGPT\n\nChatGPT prompt:\n${formatQuote(prompt)}\n\nChatGPT response:\n${formatQuote(responseMinusCode)}`;
+    const summary = `[GPT] ${prompt.slice(0, 50).split('\n')[0]}...`;
+    const message = `${summary}\n\nChatGPT prompt:\n${formatQuote(prompt)}\n\nChatGPT response:\n${formatQuote(responseMinusCode)}`;
 
     if (dryRun) {
       console.log(`Dry run: would commit code:\n${code}\n\nwith message:\n${message}`);
