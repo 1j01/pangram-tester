@@ -12,11 +12,14 @@
 
     h1 {
       color: #333;
+      margin-bottom: 10px;
     }
 
     .subtitle {
       color: #666;
       font-size: 16px;
+      margin-top: -10px;
+      margin-bottom: 20px;
     }
 
     .input-container {
@@ -96,11 +99,16 @@
         }
       }
 
-      if (lettersMissing.length === 0) {
+      var sentenceLettersCount = lettersFound.length;
+      var missingLettersCount = lettersMissing.length;
+
+      if (missingLettersCount === 0) {
         statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
       } else {
         statusOutput.innerHTML = "<span class='missing-letters'>Missing letters: " + lettersMissing.join(", ") + "</span>";
       }
+
+      statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
     }
   </script>
 </body>
