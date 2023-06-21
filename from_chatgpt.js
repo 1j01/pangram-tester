@@ -9,11 +9,26 @@ const child_process = require('child_process');
 
 const dryRun = process.argv.includes('--dry-run');
 const fromCache = process.argv.includes('--from-cache');
+const force = process.argv.includes('--force');
 
 const conversationFile = 'chatgpt_conversation.html';
 const codeTargetFile = 'index.html';
 const codeTargetLanguage = 'html'; // .language-<codeTargetLanguage> class
 const commitMessageFile = 'commit_message.txt';
+
+const isWorkingDirectoryClean = () => {
+  try {
+    child_process.execSync('git update-index --really-refresh -q');
+    child_process.execSync('git diff --quiet HEAD --');
+    child_process.execSync('git diff-index --quiet HEAD --');
+    // Handle untracked files
+    const output = child_process.execSync('git status --porcelain').toString();
+    const untrackedRegex = /^\?\?/m;
+    return !untrackedRegex.test(output);
+  } catch (error) {
+    return false;
+  }
+};
 
 async function exportChatHistory() {
   // Export the HTML content of the ChatGPT page to a file
@@ -78,7 +93,7 @@ async function commitCodeBlocks() {
     const prompt = $promptMessage.text().trim();
     const responseMinusCode = $message.text().trim();
     const message = `Commit with ChatGPT\n\nChatGPT prompt:\n${formatQuote(prompt)}\n\nChatGPT response:\n${formatQuote(responseMinusCode)}`;
-    
+
     if (dryRun) {
       console.log(`Dry run: would commit code:\n${code}\n\nwith message:\n${message}`);
       continue;
@@ -113,6 +128,14 @@ async function commitCodeBlocks() {
 }
 
 async function updateRepository() {
+  if (!isWorkingDirectoryClean()) {
+    if (force) {
+      console.warn('Working directory is not clean, but --force was specified. Continuing anyway.');
+    } else {
+      console.error('Working directory is not clean. Please commit or stash your changes first.\nOr use --force to continue anyway.');
+      process.exit(1);
+    }
+  }
   if (!fromCache) {
     await exportChatHistory();
   }
