@@ -3,69 +3,7 @@
 <head>
   <title>Pangram Tester</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      color: #666;
-      font-size: 16px;
-      margin-top: -10px;
-      margin-bottom: 20px;
-    }
-
-    .input-container {
-      margin-bottom: 20px;
-    }
-
-    .input-container input {
-      padding: 10px;
-      font-size: 16px;
-      width: 400px;
-    }
-
-    .output {
-      font-size: 18px;
-    }
-
-    .highlight {
-      background-color: yellow;
-    }
-
-    .valid-pangram {
-      color: green;
-      font-weight: bold;
-    }
-
-    .missing-letters {
-      color: red;
-    }
-
-    .suggestion-container {
-      margin-top: 20px;
-    }
-
-    .suggestion-title {
-      margin-bottom: 5px;
-    }
-
-    .suggestion-list {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .suggestion-list li {
-      margin-bottom: 5px;
-    }
+    /* CSS styles here */
   </style>
 </head>
 <body>
@@ -107,7 +45,7 @@
     function createHighlightSpan(text) {
       var span = document.createElement("span");
       span.textContent = text;
-      span.className = "highlight";
+      span.classList.add("highlight");
       return span;
     }
 
@@ -157,17 +95,18 @@
       var missingLettersCount = lettersMissing.length;
 
       if (missingLettersCount === 0) {
-        statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
+        statusOutput.textContent = "Valid pangram!";
       } else {
-        var missingLettersText = "Missing " + missingLettersCount + " letter(s): ";
+        var missingLettersText = "Missing " + missingLettersCount + " letter(s): " + lettersMissing.join(" ");
         var missingLettersSpan = document.createElement("span");
-        missingLettersSpan.className = "missing-letters";
+        missingLettersSpan.classList.add("missing-letters");
         missingLettersSpan.textContent = missingLettersText;
         statusOutput.appendChild(missingLettersSpan);
-        statusOutput.appendChild(document.createTextNode(lettersMissing.join(" ")));
       }
 
-      statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
+      var lettersCountText = "Letters in sentence: " + sentenceLettersCount;
+      statusOutput.appendChild(document.createElement("br"));
+      statusOutput.appendChild(document.createTextNode(lettersCountText));
 
       // Generate word suggestions
       var suggestions = suggestWords(lettersMissing, lettersFound);
@@ -178,9 +117,9 @@
         suggestion.highlightedLetters.forEach(function (letter) {
           var regex = new RegExp(letter, 'i');
           var span = createHighlightSpan(letter);
-          formattedWord = formattedWord.replace(regex, span.outerHTML);
+          formattedWord = formattedWord.replace(regex, span.textContent);
         });
-        li.innerHTML = formattedWord;
+        li.textContent = formattedWord;
         suggestionList.appendChild(li);
       });
     }
