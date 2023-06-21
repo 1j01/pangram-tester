@@ -19,6 +19,7 @@
       var sentence = document.getElementById("sentenceInput").value.toLowerCase();
       var alphabet = "abcdefghijklmnopqrstuvwxyz";
       var lettersFound = [];
+      var lettersMissing = [];
 
       var output = document.getElementById("output");
       output.innerHTML = ""; // Clear previous output
@@ -36,7 +37,16 @@
         }
       }
 
+      // Determine missing letters
+      for (var j = 0; j < alphabet.length; j++) {
+        var letter = alphabet.charAt(j);
+        if (!lettersFound.includes(letter)) {
+          lettersMissing.push(letter);
+        }
+      }
+
       output.innerHTML += "<br>Letters of the alphabet included: " + lettersFound.length;
+      output.innerHTML += "<br>Missing letters: " + lettersMissing.join(", ");
     }
   </script>
 </body>
