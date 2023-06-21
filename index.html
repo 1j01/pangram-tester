@@ -11,8 +11,7 @@
 <body>
   <h1>Pangram Authoring</h1>
   <p>Enter a sentence:</p>
-  <input type="text" id="sentenceInput">
-  <button onclick="analyzeSentence()">Analyze</button>
+  <input type="text" id="sentenceInput" oninput="analyzeSentence()">
   <p id="output"></p>
 
   <script>
