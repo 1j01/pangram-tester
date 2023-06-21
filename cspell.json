@@ -17,6 +17,7 @@
 		"*.egg-info/**/*"
 	],
 	"words": [
+		"holoalphabetic",
 		"Odhner",
 		"pangrammatic",
 		"pangrams",
