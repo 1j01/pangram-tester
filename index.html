@@ -48,6 +48,24 @@
     .missing-letters {
       color: red;
     }
+
+    .suggestion-container {
+      margin-top: 20px;
+    }
+
+    .suggestion-title {
+      margin-bottom: 5px;
+    }
+
+    .suggestion-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .suggestion-list li {
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
@@ -64,11 +82,33 @@
     <p id="statusOutput"></p>
   </div>
 
+  <div class="suggestion-container">
+    <p class="suggestion-title">Word Suggestions:</p>
+    <ul id="suggestionList" class="suggestion-list"></ul>
+  </div>
+
   <script>
+    // Load the dictionary file once
+    var dictionary = [];
+
+    function loadDictionary() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'words_alpha.txt', true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          dictionary = xhr.responseText.split('\n');
+        }
+      };
+      xhr.send();
+    }
+
+    loadDictionary();
+
     function analyzeSentence() {
       var sentenceInput = document.getElementById("sentenceInput");
       var sentenceOutput = document.getElementById("sentenceOutput");
       var statusOutput = document.getElementById("statusOutput");
+      var suggestionList = document.getElementById("suggestionList");
 
       var sentence = sentenceInput.value;
       var lowercaseSentence = sentence.toLowerCase();
@@ -78,6 +118,7 @@
 
       sentenceOutput.innerHTML = ""; // Clear previous output
       statusOutput.innerHTML = ""; // Clear previous status
+      suggestionList.innerHTML = ""; // Clear previous suggestions
 
       if (sentence.trim() === "") {
         return; // If input is empty, leave the results empty
@@ -118,6 +159,80 @@
       }
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
+
+      // Generate word suggestions
+      var suggestions = suggestWords(lettersMissing, lettersFound);
+      suggestions.forEach(function (word) {
+        var li = document.createElement("li");
+        li.textContent = word;
+        suggestionList.appendChild(li);
+      });
+    }
+
+    function suggestWords(lettersMissing, lettersFound) {
+      var suggestions = [];
+
+      dictionary.forEach(function (word) {
+        var wordLetters = word.split('');
+        var score = 0;
+
+        lettersMissing.forEach(function (missingLetter) {
+          if (wordLetters.includes(missingLetter)) {
+            score++;
+            wordLetters.splice(wordLetters.indexOf(missingLetter), 1);
+          }
+        });
+
+        lettersFound.forEach(function (foundLetter) {
+          if (wordLetters.includes(foundLetter)) {
+            score--;
+            wordLetters.splice(wordLetters.indexOf(foundLetter), 1);
+          }
+        });
+
+        if (score > 0) {
+          suggestions.push({
+            word: word,
+            score: score
+          });
+        }
+      });
+
+      // Sort suggestions based on the score
+      suggestions.sort(function (a, b) {
+        return b.score - a.score;
+      });
+
+      // Get the first instance of each missing letter in the suggestions
+      var missingLetterInstances = {};
+      lettersMissing.forEach(function (letter) {
+        missingLetterInstances[letter] = true;
+      });
+
+      var uniqueSuggestions = [];
+      suggestions.forEach(function (suggestion) {
+        var suggestionLetters = suggestion.word.split('');
+        var highlightedLetters = [];
+        suggestionLetters.forEach(function (letter) {
+          if (missingLetterInstances[letter]) {
+            highlightedLetters.push(letter);
+            missingLetterInstances[letter] = false;
+          }
+        });
+        suggestion.highlightedLetters = highlightedLetters;
+        uniqueSuggestions.push(suggestion);
+      });
+
+      // Format suggestions for display
+      var formattedSuggestions = uniqueSuggestions.map(function (suggestion) {
+        var formattedWord = suggestion.word;
+        suggestion.highlightedLetters.forEach(function (letter) {
+          formattedWord = formattedWord.replace(new RegExp(letter, 'i'), "<span class='highlight'>" + letter + "</span>");
+        });
+        return formattedWord;
+      });
+
+      return formattedSuggestions;
     }
   </script>
 </body>
