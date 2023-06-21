@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pangram Authoring</title>
+  <style>
+    .highlight {
+      background-color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pangram Authoring</h1>
+  <p>Enter a sentence:</p>
+  <input type="text" id="sentenceInput">
+  <button onclick="analyzeSentence()">Analyze</button>
+  <p id="output"></p>
+
+  <script>
+    function analyzeSentence() {
+      var sentence = document.getElementById("sentenceInput").value.toLowerCase();
+      var alphabet = "abcdefghijklmnopqrstuvwxyz";
+      var lettersFound = [];
+
+      for (var i = 0; i < sentence.length; i++) {
+        var char = sentence.charAt(i);
+        if (alphabet.includes(char) && !lettersFound.includes(char)) {
+          lettersFound.push(char);
+          sentence = sentence.replace(char, "<span class='highlight'>" + char + "</span>");
+        }
+      }
+
+      var output = document.getElementById("output");
+      output.innerHTML = sentence;
+      output.innerHTML += "<br>Letters of the alphabet included: " + lettersFound.length;
+    }
+  </script>
+</body>
+</html>
