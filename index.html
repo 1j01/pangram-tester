@@ -20,16 +20,22 @@
       var alphabet = "abcdefghijklmnopqrstuvwxyz";
       var lettersFound = [];
 
+      var output = document.getElementById("output");
+      output.innerHTML = ""; // Clear previous output
+
       for (var i = 0; i < sentence.length; i++) {
         var char = sentence.charAt(i);
         if (alphabet.includes(char) && !lettersFound.includes(char)) {
           lettersFound.push(char);
-          sentence = sentence.replace(char, "<span class='highlight'>" + char + "</span>");
+          var span = document.createElement("span");
+          span.textContent = char;
+          span.className = "highlight";
+          output.appendChild(span);
+        } else {
+          output.appendChild(document.createTextNode(char));
         }
       }
 
-      var output = document.getElementById("output");
-      output.innerHTML = sentence;
       output.innerHTML += "<br>Letters of the alphabet included: " + lettersFound.length;
     }
   </script>
