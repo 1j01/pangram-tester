@@ -1,39 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Pangram Authoring</title>
+  <title>Pangram Tester</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .input-container {
+      margin-bottom: 20px;
+    }
+
+    .input-container input {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .output {
+      font-size: 18px;
+    }
+
     .highlight {
       background-color: yellow;
+    }
+
+    .valid-pangram {
+      color: green;
+      font-weight: bold;
+    }
+
+    .missing-letters {
+      color: red;
     }
   </style>
 </head>
 <body>
-  <h1>Pangram Authoring</h1>
-  <p>Enter a sentence:</p>
-  <input type="text" id="sentenceInput" oninput="analyzeSentence()">
-  <p id="output"></p>
+  <h1>Pangram Tester</h1>
+  <p class="subtitle">Pangram authoring tool</p>
+
+  <div class="input-container">
+    <p>Enter a sentence:</p>
+    <input type="text" id="sentenceInput" oninput="analyzeSentence()">
+  </div>
+
+  <div class="output">
+    <p id="sentenceOutput"></p>
+    <p id="statusOutput"></p>
+  </div>
 
   <script>
     function analyzeSentence() {
-      var sentence = document.getElementById("sentenceInput").value.toLowerCase();
+      var sentenceInput = document.getElementById("sentenceInput");
+      var sentenceOutput = document.getElementById("sentenceOutput");
+      var statusOutput = document.getElementById("statusOutput");
+
+      var sentence = sentenceInput.value;
+      var lowercaseSentence = sentence.toLowerCase();
       var alphabet = "abcdefghijklmnopqrstuvwxyz";
       var lettersFound = [];
       var lettersMissing = [];
 
-      var output = document.getElementById("output");
-      output.innerHTML = ""; // Clear previous output
+      sentenceOutput.innerHTML = ""; // Clear previous output
+      statusOutput.innerHTML = ""; // Clear previous status
 
-      for (var i = 0; i < sentence.length; i++) {
-        var char = sentence.charAt(i);
+      for (var i = 0; i < lowercaseSentence.length; i++) {
+        var char = lowercaseSentence.charAt(i);
         if (alphabet.includes(char) && !lettersFound.includes(char)) {
           lettersFound.push(char);
           var span = document.createElement("span");
-          span.textContent = char;
+          span.textContent = sentence.charAt(i);
           span.className = "highlight";
-          output.appendChild(span);
+          sentenceOutput.appendChild(span);
         } else {
-          output.appendChild(document.createTextNode(char));
+          sentenceOutput.appendChild(document.createTextNode(sentence.charAt(i)));
         }
       }
 
@@ -45,8 +96,11 @@
         }
       }
 
-      output.innerHTML += "<br>Letters of the alphabet included: " + lettersFound.length;
-      output.innerHTML += "<br>Missing letters: " + lettersMissing.join(", ");
+      if (lettersMissing.length === 0) {
+        statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
+      } else {
+        statusOutput.innerHTML = "<span class='missing-letters'>Missing letters: " + lettersMissing.join(", ") + "</span>";
+      }
     }
   </script>
 </body>
