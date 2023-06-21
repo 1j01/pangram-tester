@@ -29,6 +29,7 @@
     .input-container input {
       padding: 10px;
       font-size: 16px;
+      width: 400px;
     }
 
     .output {
@@ -82,6 +83,8 @@
         return; // If input is empty, leave the results empty
       }
 
+      var sentenceLettersCount = 0;
+
       for (var i = 0; i < lowercaseSentence.length; i++) {
         var char = lowercaseSentence.charAt(i);
         if (alphabet.includes(char) && !lettersFound.includes(char)) {
@@ -90,6 +93,7 @@
           span.textContent = sentence.charAt(i);
           span.className = "highlight";
           sentenceOutput.appendChild(span);
+          sentenceLettersCount++;
         } else {
           sentenceOutput.appendChild(document.createTextNode(sentence.charAt(i)));
         }
@@ -103,7 +107,6 @@
         }
       }
 
-      var sentenceLettersCount = sentence.replace(/[^a-z]/gi, "").length;
       var missingLettersCount = lettersMissing.length;
 
       if (missingLettersCount === 0) {
