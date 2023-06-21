@@ -115,9 +115,10 @@
         var li = document.createElement("li");
         var formattedWord = suggestion.word;
         suggestion.highlightedLetters.forEach(function (letter) {
-          var regex = new RegExp(letter, 'i');
-          var span = createHighlightSpan(letter);
-          formattedWord = formattedWord.replace(regex, span.textContent);
+          var regex = new RegExp(letter, 'gi');
+          formattedWord = formattedWord.replace(regex, function (match) {
+            return createHighlightSpan(match).textContent;
+          });
         });
         li.textContent = formattedWord;
         suggestionList.appendChild(li);
