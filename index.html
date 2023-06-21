@@ -48,6 +48,14 @@
     .missing-letters {
       color: red;
     }
+
+    .suggestion-list {
+      margin-top: 10px;
+    }
+
+    .suggestion-list li {
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
@@ -62,13 +70,28 @@
   <div class="output">
     <p id="sentenceOutput"></p>
     <p id="statusOutput"></p>
+    <ul id="suggestionList" class="suggestion-list"></ul>
   </div>
 
   <script>
+    var dictionary = [];
+
+    function loadDictionary() {
+      fetch('https://github.com/dwyl/english-words/raw/master/words.txt')
+        .then(response => response.text())
+        .then(data => {
+          dictionary = data.split('\n');
+        })
+        .catch(error => {
+          console.error('Error loading dictionary:', error);
+        });
+    }
+
     function analyzeSentence() {
       var sentenceInput = document.getElementById("sentenceInput");
       var sentenceOutput = document.getElementById("sentenceOutput");
       var statusOutput = document.getElementById("statusOutput");
+      var suggestionList = document.getElementById("suggestionList");
 
       var sentence = sentenceInput.value;
       var lowercaseSentence = sentence.toLowerCase();
@@ -78,6 +101,7 @@
 
       sentenceOutput.innerHTML = ""; // Clear previous output
       statusOutput.innerHTML = ""; // Clear previous status
+      suggestionList.innerHTML = ""; // Clear previous suggestions
 
       if (sentence.trim() === "") {
         return; // If input is empty, leave the results empty
@@ -115,10 +139,63 @@
         statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
       } else {
         statusOutput.innerHTML = "<span class='missing-letters'>Missing " + missingLettersCount + " letter(s): " + lettersMissing.join(" ") + "</span>";
+        var suggestions = generateSuggestions(lettersMissing);
+        suggestions.forEach(suggestion => {
+          var listItem = document.createElement("li");
+          var suggestionText = document.createTextNode(suggestion.word);
+          listItem.appendChild(suggestionText);
+          suggestionList.appendChild(listItem);
+          if (suggestion.highlightedLetters.length > 0) {
+            suggestion.highlightedLetters.forEach(letter => {
+              var span = document.createElement("span");
+              span.textContent = letter;
+              span.className = "highlight";
+              listItem.appendChild(span);
+            });
+          }
+        });
       }
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
     }
+
+    function generateSuggestions(lettersMissing) {
+      var suggestions = [];
+
+      for (var i = 0; i < dictionary.length; i++) {
+        var word = dictionary[i];
+        var wordLetters = word.toLowerCase().split("");
+        var matchedLetters = [];
+        var remainingLetters = lettersMissing.slice();
+
+        for (var j = 0; j < wordLetters.length; j++) {
+          var letter = wordLetters[j];
+          var index = remainingLetters.indexOf(letter);
+          if (index !== -1) {
+            matchedLetters.push(letter);
+            remainingLetters.splice(index, 1);
+          }
+        }
+
+        if (matchedLetters.length > 0) {
+          suggestions.push({
+            word: word,
+            highlightedLetters: matchedLetters
+          });
+        }
+      }
+
+      suggestions.sort((a, b) => {
+        var aScore = a.highlightedLetters.length - a.word.length;
+        var bScore = b.highlightedLetters.length - b.word.length;
+        return bScore - aScore;
+      });
+
+      return suggestions;
+    }
+
+    // Load the dictionary when the page is loaded
+    window.addEventListener('DOMContentLoaded', loadDictionary);
   </script>
 </body>
 </html>
