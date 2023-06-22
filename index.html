@@ -195,6 +195,14 @@
         for (const { word } of suggestions) {
           const li = document.createElement("li");
           li.textContent = word;
+          const plusButton = document.createElement("button");
+          plusButton.textContent = "+";
+          plusButton.addEventListener("click", function() {
+            const separator = sentence.trim() ? " " : "";
+            sentenceInput.value = sentence + separator + word;
+            analyzeSentence();
+          });
+          li.appendChild(plusButton);
           suggestionsList.appendChild(li);
         }
       };
