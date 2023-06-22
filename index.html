@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -69,6 +70,7 @@
     }
   </style>
 </head>
+
 <body>
   <h1>Pangram Tester</h1>
   <p class="subtitle">Pangram authoring tool</p>
@@ -89,12 +91,17 @@
   </div>
 
   <footer>
-    <a href="https://github.com/1j01/pangram-tester">Source code on GitHub</a> | <a href="https://github.com/1j01/pangram-tester/blob/main/LICENSE-CC0.txt">CC0 License</a>
+    <a href="https://github.com/1j01/pangram-tester">Source code on GitHub</a> |
+    <a href="https://github.com/1j01/pangram-tester/blob/main/LICENSE-CC0.txt">CC0 License</a>
   </footer>
 
   <script>
     // Create a blob URL for the worker code
-    const workerURL = URL.createObjectURL(new Blob([`
+    function workerCode() {
+      // NOTE: This function is run in a web worker, so it can't access the DOM or global variables.
+      // It is defined as a function merely for syntax highlighting and IDE support,
+      // but it is treated as a string, and loaded in an isolated context.
+
       function suggestWords(alphabet, sentence, dictionary) {
         const missingLetters = [...alphabet].filter(letter => !sentence.includes(letter));
         const suggestions = [];
@@ -119,12 +126,13 @@
         return suggestions.slice(0, 30);
       }
 
-      onmessage = function(event) {
+      onmessage = function (event) {
         const { alphabet, sentence, dictionary } = event.data;
         const suggestions = suggestWords(alphabet, sentence, dictionary);
         postMessage(suggestions);
       };
-    `], { type: 'application/javascript' }));
+    }
+    const workerURL = URL.createObjectURL(new Blob([`(${workerCode})()`], { type: 'application/javascript' }));
 
     let currentSearchId = 0;
 
@@ -184,7 +192,7 @@
 
       // Start the web worker
       const worker = new Worker(workerURL);
-      worker.onmessage = function(event) {
+      worker.onmessage = function (event) {
         if (searchId !== currentSearchId) {
           return; // Ignore result if sentence changed
         }
@@ -195,7 +203,7 @@
           li.textContent = word;
           const plusButton = document.createElement("button");
           plusButton.textContent = "+";
-          plusButton.addEventListener("click", function() {
+          plusButton.addEventListener("click", function () {
             const separator = sentence.trim() && !sentence.endsWith(" ") ? " " : "";
             sentenceInput.value = sentence + separator + word;
             analyzeSentence();
@@ -215,4 +223,5 @@
     }
   </script>
 </body>
+
 </html>
