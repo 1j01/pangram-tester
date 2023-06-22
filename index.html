@@ -102,7 +102,9 @@
       // It is defined as a function merely for syntax highlighting and IDE support,
       // but it is treated as a string, and loaded in an isolated context.
 
-      function suggestWords(alphabet, sentence, dictionary) {
+      let dictionary = [];
+
+      function suggestWords(alphabet, sentence) {
         const missingLetters = new Set([...alphabet.toLowerCase()].filter(letter => !sentence.toLowerCase().includes(letter)));
         const suggestions = [];
         const redundantLetterPenalty = 0.2;
@@ -129,14 +131,25 @@
       }
 
       onmessage = function (event) {
-        const { alphabet, sentence, dictionary } = event.data;
-        const suggestions = suggestWords(alphabet, sentence, dictionary);
+        if (event.data.dictionaryURL) {
+          // Load the dictionary file
+          fetch(event.data.dictionaryURL)
+            .then(response => response.text())
+            .then(dictionaryText => {
+              dictionary = dictionaryText.split('\n').filter(word => word.length > 0);
+            });
+          return;
+        }
+        const { alphabet, sentence } = event.data;
+        const suggestions = suggestWords(alphabet, sentence);
         postMessage(suggestions);
       };
     }
     const workerURL = URL.createObjectURL(new Blob([`(${workerCode})()`], { type: 'application/javascript' }));
 
     const worker = new Worker(workerURL);
+
+    worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
     let currentSearchId = 0;
 
@@ -218,14 +231,7 @@
           suggestionsList.appendChild(li);
         }
       };
-
-      // Load the dictionary file
-      fetch('words_alpha.txt')
-        .then(response => response.text())
-        .then(dictionary => {
-          const words = dictionary.split('\n').filter(word => word.length > 0);
-          worker.postMessage({ alphabet, sentence: lowercaseSentence, dictionary: words });
-        });
+      worker.postMessage({ alphabet, sentence });
     }
   </script>
 </body>
