@@ -1,7 +1,7 @@
 
 # Pangram Tester (and ✨ChatGPT auto-commit)
 
-Analyzes pangram sentences as you type.
+Analyzes pangram sentences as you type. [Try the app here.](https://1j01.github.io/pangram-tester/)
 
 A pangram is a sentence that uses every letter of the alphabet at least once, such as "The quick brown fox jumps over the lazy dog."
 
