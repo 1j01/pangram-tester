@@ -105,7 +105,7 @@
       let dictionary = [];
 
       function suggestWords(alphabet, sentence) {
-        const missingLetters = new Set([...alphabet.toLowerCase()].filter(letter => !sentence.toLowerCase().includes(letter)));
+        const missingLetters = new Set([...alphabet.toLocaleLowerCase()].filter(letter => !sentence.toLocaleLowerCase().includes(letter)));
         const suggestions = [];
         const redundantLetterPenalty = 0.2;
 
@@ -113,8 +113,8 @@
           let score = 0;
 
           for (let i = 0; i < word.length; i++) {
-            const letterLower = word[i].toLowerCase();
-            if (missingLetters.has(letterLower) && word.toLowerCase().indexOf(letterLower, i + 1) === -1) {
+            const letterLower = word[i].toLocaleLowerCase();
+            if (missingLetters.has(letterLower) && word.toLocaleLowerCase().indexOf(letterLower, i + 1) === -1) {
               score += 1;
             } else {
               score -= redundantLetterPenalty;
@@ -162,8 +162,8 @@
       const suggestionsList = document.getElementById("suggestions");
 
       const sentence = sentenceInput.value;
-      const lowercaseSentence = sentence.toLowerCase();
-      const alphabet = alphabetInput.value.toLowerCase();
+      const lowercaseSentence = sentence.toLocaleLowerCase();
+      const alphabet = alphabetInput.value.toLocaleLowerCase();
       const lettersFound = [];
       const lettersMissing = [];
 
