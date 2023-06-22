@@ -13,7 +13,7 @@ Features:
 
 ## Methodology
 
-I just used ChatGPT to write this app 100%.
+I just used ChatGPT to write this app 99.33%.
 
 I did use my programming expertise to formulate the prompts and to give some feedback on the code, but I didn't write any of the code myself.
 
