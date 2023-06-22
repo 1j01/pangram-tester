@@ -103,7 +103,7 @@
       // but it is treated as a string, and loaded in an isolated context.
 
       function suggestWords(alphabet, sentence, dictionary) {
-        const missingLetters = [...alphabet].filter(letter => !sentence.includes(letter));
+        const missingLetters = new Set([...alphabet.toLowerCase()].filter(letter => !sentence.toLowerCase().includes(letter)));
         const suggestions = [];
         const redundantLetterPenalty = 0.2;
 
@@ -111,7 +111,8 @@
           let score = 0;
 
           for (let i = 0; i < word.length; i++) {
-            if (missingLetters.includes(word.charAt(i)) && word.indexOf(word.charAt(i), i + 1) === -1) {
+            const letterLower = word[i].toLowerCase();
+            if (missingLetters.has(letterLower) && word.toLowerCase().indexOf(letterLower, i + 1) === -1) {
               score += 1;
             } else {
               score -= redundantLetterPenalty;
