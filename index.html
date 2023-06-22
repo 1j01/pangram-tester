@@ -130,6 +130,8 @@
       };
     `], { type: 'application/javascript' }));
 
+    let currentSearchId = 0;
+
     function analyzeSentence() {
       const sentenceInput = document.getElementById("sentenceInput");
       const sentenceOutput = document.getElementById("sentenceOutput");
@@ -180,9 +182,15 @@
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
 
+      const searchId = ++currentSearchId;
+
       // Start the web worker
       const worker = new Worker(workerURL);
       worker.onmessage = function(event) {
+        if (searchId !== currentSearchId) {
+          return; // Ignore result if sentence changed
+        }
+
         const suggestions = event.data;
         for (const { word } of suggestions) {
           const li = document.createElement("li");
