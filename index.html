@@ -105,15 +105,16 @@
       function suggestWords(alphabet, sentence, dictionary) {
         const missingLetters = [...alphabet].filter(letter => !sentence.includes(letter));
         const suggestions = [];
+        const redundantLetterPenalty = 0.2;
 
         for (const word of dictionary) {
           let score = 0;
 
-          for (const letter of word) {
-            if (sentence.includes(letter)) {
-              score -= 1;
-            } else if (word.indexOf(letter) === word.lastIndexOf(letter)) {
+          for (let i = 0; i < word.length; i++) {
+            if (missingLetters.includes(word.charAt(i)) && word.indexOf(word.charAt(i), i + 1) === -1) {
               score += 1;
+            } else {
+              score -= redundantLetterPenalty;
             }
           }
 
