@@ -145,6 +145,8 @@
       statusOutput.innerHTML = ""; // Clear previous status
       suggestionsList.innerHTML = ""; // Clear previous suggestions
 
+      ++currentSearchId; // Ignore results from previous searches (if they come in late)
+
       if (sentence.trim() === "") {
         return; // If input is empty, leave the results empty
       }
