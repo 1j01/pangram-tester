@@ -136,7 +136,10 @@
     }
     const workerURL = URL.createObjectURL(new Blob([`(${workerCode})()`], { type: 'application/javascript' }));
 
+    const worker = new Worker(workerURL);
+
     let currentSearchId = 0;
+
 
     function analyzeSentence() {
       const sentenceInput = document.getElementById("sentenceInput");
@@ -192,8 +195,9 @@
 
       const searchId = ++currentSearchId;
 
-      // Start the web worker
-      const worker = new Worker(workerURL);
+      // The worker is already created.
+      // This will replace the previous message handler.
+      // TODO: restructure so the handler is only set once
       worker.onmessage = function (event) {
         if (searchId !== currentSearchId) {
           return; // Ignore result if sentence changed
