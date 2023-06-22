@@ -102,15 +102,11 @@
         for (const word of dictionary) {
           let score = 0;
 
-          for (const letter of missingLetters) {
-            if (word.includes(letter)) {
+          for (const letter of word) {
+            if (!sentence.includes(letter)) {
               score += 1;
-            }
-          }
-
-          for (const char of sentence) {
-            if (word.includes(char)) {
-              score -= 0.5;
+            } else if (sentence.indexOf(letter) === sentence.lastIndexOf(letter)) {
+              score -= 1;
             }
           }
 
