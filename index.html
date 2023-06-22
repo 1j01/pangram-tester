@@ -37,6 +37,10 @@
       flex: 1;
     }
 
+    .alphabet-input {
+      margin-bottom: 10px;
+    }
+
     .output {
       font-size: 18px;
       flex: 1;
@@ -71,6 +75,11 @@
     <input type="text" id="sentenceInput" oninput="analyzeSentence()" placeholder="Enter a sentence">
   </div>
 
+  <div class="alphabet-input">
+    <label for="alphabetInput">Alphabet: </label>
+    <input type="text" id="alphabetInput" oninput="analyzeSentence()" value="abcdefghijklmnopqrstuvwxyz">
+  </div>
+
   <div class="output">
     <p id="sentenceOutput"></p>
     <p id="statusOutput"></p>
@@ -85,10 +94,11 @@
       var sentenceInput = document.getElementById("sentenceInput");
       var sentenceOutput = document.getElementById("sentenceOutput");
       var statusOutput = document.getElementById("statusOutput");
+      var alphabetInput = document.getElementById("alphabetInput");
 
       var sentence = sentenceInput.value;
       var lowercaseSentence = sentence.toLowerCase();
-      var alphabet = "abcdefghijklmnopqrstuvwxyz";
+      var alphabet = alphabetInput.value.toLowerCase();
       var lettersFound = [];
       var lettersMissing = [];
 

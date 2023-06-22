@@ -6,6 +6,7 @@ Analyzes pangram sentences as you type. [Try the app here.](https://1j01.github.
 A pangram is a sentence that uses every letter of the alphabet at least once, such as "The quick brown fox jumps over the lazy dog."
 
 Features:
+- Configurable alphabet (e.g. for non-English languages)
 - Highlights unique letters in the sentence (the first occurrence of each letter)
 - Lists (and counts) missing letters
 - Gives a count of the total number of letters in the sentence
