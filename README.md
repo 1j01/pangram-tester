@@ -10,13 +10,14 @@ Features:
 - Highlights unique letters in the sentence (the first occurrence of each letter)
 - Lists (and counts) missing letters
 - Gives a count of the total number of letters in the sentence
+- Suggests words to add based on missing letters, using a word list from [dwyl/english-words](https://github.com/dwyl/english-words). Words are scored based on the missing letters they add, and penalized for redundant letters.
 - Updates as you type
 
 ## Methodology
 
-I just used ChatGPT to write this app 99.33%.
+I just used ChatGPT to write this app 99%.
 
-I did use my programming expertise to formulate the prompts and to give some feedback on the code, but I didn't write any of the code myself.
+I did use my programming expertise to formulate the prompts and to give some feedback on the code, but I didn't write any of the code myself... until adding the word suggestion feature.
 
 It's interesting that it was easier to create this application using AI than to search the web for an existing solution of comparable quality.
 

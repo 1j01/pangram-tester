@@ -17,6 +17,7 @@
 		"*.egg-info/**/*"
 	],
 	"words": [
+		"dwyl",
 		"holoalphabetic",
 		"Odhner",
 		"pangrammatic",
