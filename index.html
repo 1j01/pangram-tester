@@ -85,6 +85,7 @@
   <div class="output">
     <p id="sentenceOutput"></p>
     <p id="statusOutput"></p>
+    <ul id="suggestions"></ul>
   </div>
 
   <footer>
@@ -92,32 +93,71 @@
   </footer>
 
   <script>
-    function analyzeSentence() {
-      var sentenceInput = document.getElementById("sentenceInput");
-      var sentenceOutput = document.getElementById("sentenceOutput");
-      var statusOutput = document.getElementById("statusOutput");
-      var alphabetInput = document.getElementById("alphabetInput");
+    // Create a blob URL for the worker code
+    const workerURL = URL.createObjectURL(new Blob([`
+      function suggestWords(alphabet, sentence, dictionary) {
+        const missingLetters = [...alphabet].filter(letter => !sentence.includes(letter));
+        const suggestions = [];
 
-      var sentence = sentenceInput.value;
-      var lowercaseSentence = sentence.toLowerCase();
-      var alphabet = alphabetInput.value.toLowerCase();
-      var lettersFound = [];
-      var lettersMissing = [];
+        for (const word of dictionary) {
+          let score = 0;
+
+          for (const letter of missingLetters) {
+            if (word.includes(letter)) {
+              score += 1;
+            }
+          }
+
+          for (const char of sentence) {
+            if (word.includes(char)) {
+              score -= 0.5;
+            }
+          }
+
+          if (score > 0) {
+            suggestions.push({ word, score });
+          }
+        }
+
+        suggestions.sort((a, b) => b.score - a.score);
+        return suggestions.slice(0, 30);
+      }
+
+      onmessage = function(event) {
+        const { alphabet, sentence, dictionary } = event.data;
+        const suggestions = suggestWords(alphabet, sentence, dictionary);
+        postMessage(suggestions);
+      };
+    `], { type: 'application/javascript' }));
+
+    function analyzeSentence() {
+      const sentenceInput = document.getElementById("sentenceInput");
+      const sentenceOutput = document.getElementById("sentenceOutput");
+      const statusOutput = document.getElementById("statusOutput");
+      const alphabetInput = document.getElementById("alphabetInput");
+      const suggestionsList = document.getElementById("suggestions");
+
+      const sentence = sentenceInput.value;
+      const lowercaseSentence = sentence.toLowerCase();
+      const alphabet = alphabetInput.value.toLowerCase();
+      const lettersFound = [];
+      const lettersMissing = [];
 
       sentenceOutput.innerHTML = ""; // Clear previous output
       statusOutput.innerHTML = ""; // Clear previous status
+      suggestionsList.innerHTML = ""; // Clear previous suggestions
 
       if (sentence.trim() === "") {
         return; // If input is empty, leave the results empty
       }
 
-      var sentenceLettersCount = 0;
+      let sentenceLettersCount = 0;
 
-      for (var i = 0; i < lowercaseSentence.length; i++) {
-        var char = lowercaseSentence.charAt(i);
+      for (let i = 0; i < lowercaseSentence.length; i++) {
+        const char = lowercaseSentence.charAt(i);
         if (alphabet.includes(char) && !lettersFound.includes(char)) {
           lettersFound.push(char);
-          var span = document.createElement("span");
+          const span = document.createElement("span");
           span.textContent = sentence.charAt(i);
           span.className = "highlight";
           sentenceOutput.appendChild(span);
@@ -129,23 +169,35 @@
         }
       }
 
-      // Determine missing letters
-      for (var j = 0; j < alphabet.length; j++) {
-        var letter = alphabet.charAt(j);
-        if (!lettersFound.includes(letter)) {
-          lettersMissing.push(letter);
-        }
-      }
-
-      var missingLettersCount = lettersMissing.length;
+      const missingLetters = [...alphabet].filter(letter => !lettersFound.includes(letter));
+      const missingLettersCount = missingLetters.length;
 
       if (missingLettersCount === 0) {
         statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
       } else {
-        statusOutput.innerHTML = "<span class='missing-letters'>Missing " + missingLettersCount + " letter(s): " + lettersMissing.join(" ") + "</span>";
+        statusOutput.innerHTML = `<span class='missing-letters'>Missing ${missingLettersCount} letter(s): ${missingLetters.join(" ")}</span>`;
       }
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
+
+      // Start the web worker
+      const worker = new Worker(workerURL);
+      worker.onmessage = function(event) {
+        const suggestions = event.data;
+        for (const { word } of suggestions) {
+          const li = document.createElement("li");
+          li.textContent = word;
+          suggestionsList.appendChild(li);
+        }
+      };
+
+      // Load the dictionary file
+      fetch('words_alpha.txt')
+        .then(response => response.text())
+        .then(dictionary => {
+          const words = dictionary.split('\n').filter(word => word.length > 0);
+          worker.postMessage({ alphabet, sentence: lowercaseSentence, dictionary: words });
+        });
     }
   </script>
 </body>
