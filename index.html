@@ -103,10 +103,10 @@
           let score = 0;
 
           for (const letter of word) {
-            if (!sentence.includes(letter)) {
-              score += 1;
-            } else if (sentence.indexOf(letter) === sentence.lastIndexOf(letter)) {
+            if (sentence.includes(letter)) {
               score -= 1;
+            } else if (word.indexOf(letter) === word.lastIndexOf(letter)) {
+              score += 1;
             }
           }
 
@@ -194,7 +194,7 @@
           const plusButton = document.createElement("button");
           plusButton.textContent = "+";
           plusButton.addEventListener("click", function() {
-            const separator = sentence.trim() ? " " : "";
+            const separator = sentence.trim() && !sentence.endsWith(" ") ? " " : "";
             sentenceInput.value = sentence + separator + word;
             analyzeSentence();
           });
