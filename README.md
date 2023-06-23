@@ -11,15 +11,20 @@ Features:
 - Lists (and counts) missing letters
 - Gives a count of the total number of letters in the sentence
 - Suggests words to add based on missing letters, using a word list from [dwyl/english-words](https://github.com/dwyl/english-words). Words are scored based on the missing letters they add, and penalized for redundant letters.
+- Draws arrows from redundant letters to the prior occurrence of the letter. This is a little silly, but I wanted something more *symmetrical* than just highlighting the first occurrence of each letter.
 - Updates as you type
 
 ## Methodology
 
-I just used ChatGPT to write this app 90%.
+I just used ChatGPT to write the first fully working, and nice looking, version of this app.
 
-I did use my programming expertise to formulate the prompts and to give some feedback on the code, but I didn't write any of the code myself... until adding the word suggestion feature.
+I did use my programming expertise to formulate the prompts and to give some feedback on the code, but I didn't write any of the code myself (for the [first version](https://jsfiddle.net/1j01/g5rwmuqc/)).
 
 It's interesting that it was easier to create this application using AI than to search the web for an existing solution of comparable quality.
+
+When it came to adding the word suggestion feature, I tried several times but eventually gave up on using ChatGPT for that. It was able to scaffold out the feature, but it would freeze up the browser, and after telling it to use a web worker, it couldn't get the ranking right, among other things.
+
+So the word suggestion and redundancy graphing are written manually, and I did a bunch of clean up once I was working with the code directly.
 
 ## ChatGPT auto-commit
 
