@@ -186,23 +186,23 @@
       let sentenceLettersCount = 0;
       const fragment = document.createDocumentFragment();
       for (let i = 0; i < lowercaseText.length; i++) {
-        const char = lowercaseText.charAt(i);
+        const char = lowercaseText[i];
         if (alphabet.includes(char)) {
           sentenceLettersCount++;
           if (!lettersFound.has(char) && !precedingLettersFound.has(char)) {
             lettersFound.add(char);
             const span = document.createElement("span");
-            span.textContent = text.charAt(i);
+            span.textContent = text[i];
             span.className = "first-occurrence";
             fragment.appendChild(span);
           } else {
             const span = document.createElement("span");
-            span.textContent = text.charAt(i);
+            span.textContent = text[i];
             span.className = "redundant-letter";
             fragment.appendChild(span);
           }
         } else {
-          fragment.appendChild(document.createTextNode(text.charAt(i)));
+          fragment.appendChild(document.createTextNode(text[i]));
         }
       }
       return { sentenceLettersCount, lettersFound, fragment };
