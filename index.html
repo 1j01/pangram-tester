@@ -304,6 +304,19 @@
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
 
+      if (alphabet !== [...new Set(alphabet)].join("")) {
+        const duplicates = [...new Set([...alphabet]
+          .filter((char, index, arr) => arr.indexOf(char) !== index))].join(" ");
+
+        statusOutput.innerHTML += "<br><span class='invalid-alphabet'>⚠️ Alphabet field contains duplicate letters: " + duplicates + "</span>";
+        // Would the letter redundancy graph be useful here, or just confusing?
+        // i.e. show the whole alphabet, with highlighting and a graph like the sentence gets.
+        // I think this warning's main job is to notify the user if they
+        // accidentally type into the alphabet field instead of the sentence field,
+        // so it might be a bad idea to share the UI there, even if intellectually
+        // it'd be cool to reuse the code, and technically it would be more informative.
+      }
+
       worker.postMessage({ alphabet, sentence });
     }
 
