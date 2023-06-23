@@ -187,22 +187,22 @@
       const fragment = document.createDocumentFragment();
       for (let i = 0; i < lowercaseSentence.length; i++) {
         const char = lowercaseSentence.charAt(i);
-        if (alphabet.includes(char) && !lettersFound.includes(char) && !lettersAlreadyPresent.has(char)) {
-          lettersFound.push(char);
-          const span = document.createElement("span");
-          span.textContent = text.charAt(i);
-          span.className = "first-occurrence";
-          fragment.appendChild(span);
-        } else if (alphabet.includes(char)) {
-          const span = document.createElement("span");
-          span.textContent = text.charAt(i);
-          span.className = "redundant-letter";
-          fragment.appendChild(span);
-        } else {
-          fragment.appendChild(document.createTextNode(text.charAt(i)));
-        }
         if (alphabet.includes(char)) {
           sentenceLettersCount++;
+          if (!lettersFound.includes(char) && !lettersAlreadyPresent.has(char)) {
+            lettersFound.push(char);
+            const span = document.createElement("span");
+            span.textContent = text.charAt(i);
+            span.className = "first-occurrence";
+            fragment.appendChild(span);
+          } else {
+            const span = document.createElement("span");
+            span.textContent = text.charAt(i);
+            span.className = "redundant-letter";
+            fragment.appendChild(span);
+          }
+        } else {
+          fragment.appendChild(document.createTextNode(text.charAt(i)));
         }
       }
       return { sentenceLettersCount, lettersFound, fragment };
