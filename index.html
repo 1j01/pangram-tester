@@ -314,6 +314,22 @@
       svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
       svg.setAttribute("preserveAspectRatio", "none");
 
+      const base = `
+        <defs>
+          <marker 
+            id='head' 
+            orient="auto" 
+            markerWidth='3' 
+            markerHeight='4' 
+            refX='0.1' 
+            refY='2'
+          >
+            <path d='M0,0 V4 L2,2 Z' fill="#8d5c00" />
+          </marker>
+        </defs>
+      `;
+      svg.innerHTML = base;
+
       const redundantLetters = sentenceOutput.querySelectorAll(".redundant-letter");
       for (const redundantLetter of redundantLetters) {
         const xOnPage = redundantLetter.offsetLeft + redundantLetter.offsetWidth / 2;
@@ -338,14 +354,20 @@
         const priorXOnPage = priorLetter.offsetLeft + priorLetter.offsetWidth / 2;
         const priorX = priorXOnPage - left;
 
+        const endPointsY = 5;
+
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const midX = (x + priorX) / 2;
+        const controlPointX = (x + priorX) / 2;
         const strokeWidth = 2;
-        const midY = Math.min(20 + Math.abs(x - priorX) / 2, (height - strokeWidth) * 2);
-        path.setAttribute("d", `M${x} 0 Q${midX} ${midY} ${priorX} 0`);
+        const controlPointY = Math.min(20 + Math.abs(x - priorX) / 2, (height - strokeWidth) * 2);
+        path.setAttribute("d", `M${x} ${endPointsY} Q${controlPointX} ${controlPointY} ${priorX} ${endPointsY}`);
         path.setAttribute("stroke", getComputedStyle(redundantLetter).color);
         path.setAttribute("stroke-width", strokeWidth);
+        path.setAttribute("stroke-linecap", "round");
         path.setAttribute("fill", "none");
+        if (priorLetter.classList.contains("first-occurrence")) {
+          path.setAttribute("marker-end", "url(#head)");
+        }
         svg.append(path);
       }
 
