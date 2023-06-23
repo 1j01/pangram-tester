@@ -101,6 +101,12 @@
   </footer>
 
   <script>
+    const sentenceInput = document.getElementById("sentenceInput");
+    const sentenceOutput = document.getElementById("sentenceOutput");
+    const statusOutput = document.getElementById("statusOutput");
+    const alphabetInput = document.getElementById("alphabetInput");
+    const suggestionsList = document.getElementById("suggestions");
+
     function workerCode() {
       // NOTE: This function is run in a web worker, so it can't access the DOM or global variables.
       // It is defined as a function merely for syntax highlighting and IDE support,
@@ -173,6 +179,38 @@
 
     worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
+    worker.onmessage = function (event) {
+      const { suggestions, forSentence } = event.data;
+
+      const sentence = sentenceInput.value;
+      const alphabet = alphabetInput.value.toLocaleLowerCase();
+
+      if (forSentence !== sentence) {
+        return; // Ignore result if sentence changed while searching
+      }
+
+      for (const { word } of suggestions) {
+        const li = document.createElement("li");
+        li.appendChild(highlightFirstOccurrences(word, alphabet, sentence).fragment);
+        const plusButton = document.createElement("button");
+        plusButton.textContent = "+";
+        plusButton.addEventListener("click", function () {
+          const separator = sentence.trim() && !sentence.endsWith(" ") ? " " : "";
+          // Note: setting sentenceInput.value would break Ctrl+Z!
+          // Use insertText command to preserve undo history.
+          // Note 2: Inserting at the cursor could be good, but separator logic is for the end of the sentence,
+          // so place the cursor at the end, for now at least.
+          // It's simpler to think about, so it might be better anyway.
+          sentenceInput.focus();
+          sentenceInput.setSelectionRange(sentenceInput.value.length, sentenceInput.value.length);
+          document.execCommand("insertText", false, separator + word);
+          analyzeSentence();
+        });
+        li.appendChild(plusButton);
+        suggestionsList.appendChild(li);
+      }
+    };
+
     function highlightFirstOccurrences(text, alphabet, precedingContext = "") {
       const lowercaseText = text.toLocaleLowerCase();
       const precedingLettersFound = new Set();
@@ -209,12 +247,6 @@
     }
 
     function analyzeSentence() {
-      const sentenceInput = document.getElementById("sentenceInput");
-      const sentenceOutput = document.getElementById("sentenceOutput");
-      const statusOutput = document.getElementById("statusOutput");
-      const alphabetInput = document.getElementById("alphabetInput");
-      const suggestionsList = document.getElementById("suggestions");
-
       const sentence = sentenceInput.value;
       const alphabet = alphabetInput.value.toLocaleLowerCase();
       const lettersMissing = [];
@@ -245,36 +277,6 @@
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
 
-      // The worker is already created.
-      // This will replace the previous message handler.
-      // TODO: restructure so the handler is only set once
-      worker.onmessage = function (event) {
-        const { suggestions, forSentence } = event.data;
-
-        if (forSentence !== sentence) {
-          return; // Ignore result if sentence changed
-        }
-
-        for (const { word } of suggestions) {
-          const li = document.createElement("li");
-          li.appendChild(highlightFirstOccurrences(word, alphabet, sentence).fragment);
-          const plusButton = document.createElement("button");
-          plusButton.textContent = "+";
-          plusButton.addEventListener("click", function () {
-            const separator = sentence.trim() && !sentence.endsWith(" ") ? " " : "";
-            // sentenceInput.value = sentence + separator + word; // breaks undo history
-            // Inserting at the cursor could be good, but separator logic is for the end of the sentence,
-            // so place the cursor at the end, for now at least.
-            // It's simpler to think about, so it might be better anyway.
-            sentenceInput.focus();
-            sentenceInput.setSelectionRange(sentenceInput.value.length, sentenceInput.value.length);
-            document.execCommand("insertText", false, separator + word);
-            analyzeSentence();
-          });
-          li.appendChild(plusButton);
-          suggestionsList.appendChild(li);
-        }
-      };
       worker.postMessage({ alphabet, sentence });
     }
   </script>
