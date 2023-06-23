@@ -96,18 +96,18 @@
   </footer>
 
   <script>
-    // Create a blob URL for the worker code
     function workerCode() {
       // NOTE: This function is run in a web worker, so it can't access the DOM or global variables.
       // It is defined as a function merely for syntax highlighting and IDE support,
       // but it is treated as a string, and loaded in an isolated context.
 
       let dictionary = [];
-
       function suggestWords(alphabet, sentence) {
         const missingLetters = new Set([...alphabet.toLocaleLowerCase()].filter(letter => !sentence.toLocaleLowerCase().includes(letter)));
         const suggestions = [];
         const redundantLetterPenalty = 0.2;
+        const maxSuggestions = 30;
+        let scoreFilter = 0;
 
         for (const word of dictionary) {
           let score = 0;
@@ -121,13 +121,30 @@
             }
           }
 
-          if (score > 0) {
-            suggestions.push({ word, score });
+          if (score >= scoreFilter) {
+            // suggestions.push({ word, score });
+            // suggestions.sort((a, b) => b.score - a.score);
+
+            // Instead of push+sort, insert the suggestion in the right place
+            let i = 0;
+            while (i < suggestions.length && suggestions[i].score > score) {
+              i++;
+            }
+            suggestions.splice(i, 0, { word, score });
+
+            // Remove excess suggestions
+            while (suggestions.length > maxSuggestions) {
+              suggestions.pop();
+            }
+
+            // Update the score filter
+            if (suggestions.length === maxSuggestions) {
+              scoreFilter = suggestions[suggestions.length - 1].score;
+            }
           }
         }
 
-        suggestions.sort((a, b) => b.score - a.score);
-        return suggestions.slice(0, 30);
+        return suggestions;
       }
 
       onmessage = function (event) {
