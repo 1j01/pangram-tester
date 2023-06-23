@@ -194,10 +194,7 @@
       };
     }
     const workerURL = URL.createObjectURL(new Blob([`(${workerCode})()`], { type: 'application/javascript' }));
-
     const worker = new Worker(workerURL);
-
-    worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
     worker.onmessage = function (event) {
       const { suggestions, forSentence } = event.data;
@@ -230,6 +227,8 @@
         suggestionsList.appendChild(li);
       }
     };
+
+    worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
     function highlightFirstOccurrences(text, alphabet, precedingContext = "") {
       const lowercaseText = text.toLocaleLowerCase();
