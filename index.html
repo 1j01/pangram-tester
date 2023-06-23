@@ -174,22 +174,22 @@
     worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
     function highlightFirstOccurrences(text, alphabet, precedingContext = "") {
-      const lowercaseSentence = text.toLocaleLowerCase();
-      const lettersAlreadyPresent = new Set();
+      const lowercaseText = text.toLocaleLowerCase();
+      const precedingLettersFound = new Set();
       for (let i = 0; i < precedingContext.length; i++) {
         const char = precedingContext[i];
         if (alphabet.includes(char)) {
-          lettersAlreadyPresent.add(char);
+          precedingLettersFound.add(char);
         }
       }
       const lettersFound = new Set();
       let sentenceLettersCount = 0;
       const fragment = document.createDocumentFragment();
-      for (let i = 0; i < lowercaseSentence.length; i++) {
-        const char = lowercaseSentence.charAt(i);
+      for (let i = 0; i < lowercaseText.length; i++) {
+        const char = lowercaseText.charAt(i);
         if (alphabet.includes(char)) {
           sentenceLettersCount++;
-          if (!lettersFound.has(char) && !lettersAlreadyPresent.has(char)) {
+          if (!lettersFound.has(char) && !precedingLettersFound.has(char)) {
             lettersFound.add(char);
             const span = document.createElement("span");
             span.textContent = text.charAt(i);
