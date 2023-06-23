@@ -182,15 +182,15 @@
           lettersAlreadyPresent.add(char);
         }
       }
-      const lettersFound = [];
+      const lettersFound = new Set();
       let sentenceLettersCount = 0;
       const fragment = document.createDocumentFragment();
       for (let i = 0; i < lowercaseSentence.length; i++) {
         const char = lowercaseSentence.charAt(i);
         if (alphabet.includes(char)) {
           sentenceLettersCount++;
-          if (!lettersFound.includes(char) && !lettersAlreadyPresent.has(char)) {
-            lettersFound.push(char);
+          if (!lettersFound.has(char) && !lettersAlreadyPresent.has(char)) {
+            lettersFound.add(char);
             const span = document.createElement("span");
             span.textContent = text.charAt(i);
             span.className = "first-occurrence";
@@ -230,7 +230,7 @@
       const { sentenceLettersCount, lettersFound, fragment } = highlightFirstOccurrences(sentence, alphabet);
       sentenceOutput.appendChild(fragment);
 
-      const missingLetters = [...alphabet].filter(letter => !lettersFound.includes(letter));
+      const missingLetters = [...alphabet].filter(letter => !lettersFound.has(letter));
       const missingLettersCount = missingLetters.length;
 
       if (missingLettersCount === 0) {
