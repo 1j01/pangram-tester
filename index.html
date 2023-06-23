@@ -168,6 +168,28 @@
 
     worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
+    function highlightFirstOccurrences(sentence, alphabet, targetElement) {
+      const lowercaseSentence = sentence.toLocaleLowerCase();
+      const lettersFound = [];
+      let sentenceLettersCount = 0;
+      for (let i = 0; i < lowercaseSentence.length; i++) {
+        const char = lowercaseSentence.charAt(i);
+        if (alphabet.includes(char) && !lettersFound.includes(char)) {
+          lettersFound.push(char);
+          const span = document.createElement("span");
+          span.textContent = sentence.charAt(i);
+          span.className = "highlight";
+          targetElement.appendChild(span);
+        } else {
+          targetElement.appendChild(document.createTextNode(sentence.charAt(i)));
+        }
+        if (alphabet.includes(char)) {
+          sentenceLettersCount++;
+        }
+      }
+      return { sentenceLettersCount, lettersFound };
+    }
+
     function analyzeSentence() {
       const sentenceInput = document.getElementById("sentenceInput");
       const sentenceOutput = document.getElementById("sentenceOutput");
@@ -176,9 +198,7 @@
       const suggestionsList = document.getElementById("suggestions");
 
       const sentence = sentenceInput.value;
-      const lowercaseSentence = sentence.toLocaleLowerCase();
       const alphabet = alphabetInput.value.toLocaleLowerCase();
-      const lettersFound = [];
       const lettersMissing = [];
 
       sentenceOutput.innerHTML = ""; // Clear previous output
@@ -189,23 +209,7 @@
         return; // If input is empty, leave the results empty
       }
 
-      let sentenceLettersCount = 0;
-
-      for (let i = 0; i < lowercaseSentence.length; i++) {
-        const char = lowercaseSentence.charAt(i);
-        if (alphabet.includes(char) && !lettersFound.includes(char)) {
-          lettersFound.push(char);
-          const span = document.createElement("span");
-          span.textContent = sentence.charAt(i);
-          span.className = "highlight";
-          sentenceOutput.appendChild(span);
-        } else {
-          sentenceOutput.appendChild(document.createTextNode(sentence.charAt(i)));
-        }
-        if (alphabet.includes(char)) {
-          sentenceLettersCount++;
-        }
-      }
+      const { sentenceLettersCount, lettersFound } = highlightFirstOccurrences(sentence, alphabet, sentenceOutput);
 
       const missingLetters = [...alphabet].filter(letter => !lettersFound.includes(letter));
       const missingLettersCount = missingLetters.length;
