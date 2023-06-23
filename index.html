@@ -305,6 +305,11 @@
     }
 
     function graphRedundancies() {
+      const oldSvg = sentenceOutput.querySelector("svg");
+      if (oldSvg) {
+        oldSvg.remove();
+      }
+
       const height = 100;
       const width = sentenceOutput.clientWidth;
       const left = sentenceOutput.offsetLeft;
@@ -376,6 +381,8 @@
 
       sentenceOutput.append(svg);
     }
+
+    window.addEventListener("resize", graphRedundancies);
   </script>
 </body>
 
