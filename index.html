@@ -210,7 +210,7 @@
 
       for (const { word } of suggestions) {
         const li = document.createElement("li");
-        li.appendChild(highlightFirstOccurrences(word, alphabet, sentence).fragment);
+        li.append(highlightFirstOccurrences(word, alphabet, sentence).fragment);
         const plusButton = document.createElement("button");
         plusButton.textContent = "+";
         plusButton.addEventListener("click", function () {
@@ -225,8 +225,8 @@
           document.execCommand("insertText", false, separator + word);
           analyzeSentence();
         });
-        li.appendChild(plusButton);
-        suggestionsList.appendChild(li);
+        li.append(plusButton);
+        suggestionsList.append(li);
       }
     };
 
@@ -253,15 +253,15 @@
             const span = document.createElement("span");
             span.textContent = text[i];
             span.className = "first-occurrence";
-            fragment.appendChild(span);
+            fragment.append(span);
           } else {
             const span = document.createElement("span");
             span.textContent = text[i];
             span.className = "redundant-letter";
-            fragment.appendChild(span);
+            fragment.append(span);
           }
         } else {
-          fragment.appendChild(document.createTextNode(text[i]));
+          fragment.append(text[i]);
         }
       }
       return { sentenceLettersCount, lettersFound, fragment };
@@ -281,7 +281,7 @@
       }
 
       const { sentenceLettersCount, lettersFound, fragment } = highlightFirstOccurrences(sentence, alphabet);
-      sentenceOutput.appendChild(fragment);
+      sentenceOutput.append(fragment);
 
       const missingLetters = [...alphabet].filter(letter => !lettersFound.has(letter));
       const missingLettersCount = missingLetters.length;
