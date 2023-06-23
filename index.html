@@ -354,13 +354,16 @@
         const priorXOnPage = priorLetter.offsetLeft + priorLetter.offsetWidth / 2;
         const priorX = priorXOnPage - left;
 
+        const strokeWidth = 2;
         const endPointsY = 5;
+        const controlPointsY = Math.min(20 + Math.abs(x - priorX) / 2, height - strokeWidth);
 
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const controlPointX = (x + priorX) / 2;
-        const strokeWidth = 2;
-        const controlPointY = Math.min(20 + Math.abs(x - priorX) / 2, (height - strokeWidth) * 2);
-        path.setAttribute("d", `M${x} ${endPointsY} Q${controlPointX} ${controlPointY} ${priorX} ${endPointsY}`);
+        const curveFactor = 0.1;
+        const controlPoint1X = priorX + (x - priorX) * curveFactor;
+        const controlPoint2X = x - (x - priorX) * curveFactor;
+        // path.setAttribute("d", `M${priorX},${endPointsY} C${controlPoint1X},${controlPointsY} ${controlPoint2X},${controlPointsY} ${x},${endPointsY}`);
+        path.setAttribute("d", `M${x},${endPointsY} C${controlPoint2X},${controlPointsY} ${controlPoint1X},${controlPointsY} ${priorX},${endPointsY}`);
         path.setAttribute("stroke", getComputedStyle(redundantLetter).color);
         path.setAttribute("stroke-width", strokeWidth);
         path.setAttribute("stroke-linecap", "round");
