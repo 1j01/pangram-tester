@@ -15,7 +15,7 @@ Features:
 
 ## Methodology
 
-I just used ChatGPT to write this app 99%.
+I just used ChatGPT to write this app 90%.
 
 I did use my programming expertise to formulate the prompts and to give some feedback on the code, but I didn't write any of the code myself... until adding the word suggestion feature.
 
@@ -36,6 +36,7 @@ Caveats:
 - If you include code (of the same language) in a prompt, it will be confused currently. (TODO: commit user-supplied code with a different message)
 - This does not use the OpenAI API (TODO), but rather scrapes the chat history from the web page. This is fragile and will definitely break in the future.
 - It does not preserve time/date information. (This should be easy to add, once it uses the API, assuming such information is provided.)
+- As code gets long, ChatGPT starts to (reasonably) elide sections of code, such as CSS if unchanged. Trivial changes like adding a charset declaration may make it omit most of your code, and once it's done so, it's probably more likely to do it again. This workflow is unsustainable, but it can be fun for jump-starting a project. Eventually I gave up on using the auto-commit since I would have had to paste all my app code into the chat to sync it, and just went back to copying and pasting, and then gave up on trying to do it all with ChatGPT since it couldn't do the word suggestion feature very well.
 
 ## License
 
