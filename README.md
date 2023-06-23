@@ -22,7 +22,7 @@ I did use my programming expertise to formulate the prompts and to give some fee
 
 It's interesting that it was easier to create this application using AI than to search the web for an existing solution of comparable quality.
 
-When it came to adding the word suggestion feature, I tried several times but eventually gave up on using ChatGPT for that. It was able to scaffold out the feature, but it would freeze up the browser, and after telling it to use a web worker, it couldn't get the ranking right, among other things.
+When it came to adding the word suggestion feature, I tried several times but eventually gave up on using ChatGPT for that. It was able to scaffold out the feature, but it would freeze up the browser, or after telling it to use a web worker, it couldn't get the ranking right, among other things. It wouldn't put the worker code in a function for syntax highlighting, like I asked, etc. and once it's written the initial code, it prefers to make mild changes to it even when asking it to make structural changes, so it's an awkward decision between trying to get it to mold it or starting over so it's more plastic.
 
 So the word suggestion and redundancy graphing are written manually, and I did a bunch of clean up once I was working with the code directly.
 
