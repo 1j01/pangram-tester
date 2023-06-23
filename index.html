@@ -213,7 +213,7 @@
       if (missingLettersCount === 0) {
         statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
       } else {
-        statusOutput.innerHTML = `<span class='missing-letters'>Missing ${missingLettersCount} letter(s): ${missingLetters.join(" ")}</span>`;
+        statusOutput.innerHTML = `<span class='missing-letters'>Missing letters (${missingLettersCount}): ${missingLetters.join(" ")}</span>`;
       }
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
