@@ -168,21 +168,28 @@
 
     worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
-    function highlightFirstOccurrences(sentence, alphabet) {
-      const lowercaseSentence = sentence.toLocaleLowerCase();
+    function highlightFirstOccurrences(text, alphabet, precedingContext = "") {
+      const lowercaseSentence = text.toLocaleLowerCase();
+      const lettersAlreadyPresent = new Set();
+      for (let i = 0; i < precedingContext.length; i++) {
+        const char = precedingContext[i];
+        if (alphabet.includes(char)) {
+          lettersAlreadyPresent.add(char);
+        }
+      }
       const lettersFound = [];
       let sentenceLettersCount = 0;
       const fragment = document.createDocumentFragment();
       for (let i = 0; i < lowercaseSentence.length; i++) {
         const char = lowercaseSentence.charAt(i);
-        if (alphabet.includes(char) && !lettersFound.includes(char)) {
+        if (alphabet.includes(char) && !lettersFound.includes(char) && !lettersAlreadyPresent.has(char)) {
           lettersFound.push(char);
           const span = document.createElement("span");
-          span.textContent = sentence.charAt(i);
+          span.textContent = text.charAt(i);
           span.className = "highlight";
           fragment.appendChild(span);
         } else {
-          fragment.appendChild(document.createTextNode(sentence.charAt(i)));
+          fragment.appendChild(document.createTextNode(text.charAt(i)));
         }
         if (alphabet.includes(char)) {
           sentenceLettersCount++;
@@ -236,7 +243,7 @@
 
         for (const { word } of suggestions) {
           const li = document.createElement("li");
-          li.textContent = word;
+          li.appendChild(highlightFirstOccurrences(word, alphabet, sentence).fragment);
           const plusButton = document.createElement("button");
           plusButton.textContent = "+";
           plusButton.addEventListener("click", function () {
