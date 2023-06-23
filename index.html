@@ -81,12 +81,12 @@
   <p class="subtitle">Pangram authoring tool</p>
 
   <div class="input-container">
-    <input type="text" id="sentenceInput" oninput="analyzeSentence()" placeholder="Enter a sentence" autofocus>
+    <input type="text" id="sentenceInput" placeholder="Enter a sentence" autofocus>
   </div>
 
   <div class="alphabet-input">
     <label for="alphabetInput">Alphabet: </label>
-    <input type="text" id="alphabetInput" oninput="analyzeSentence()" value="abcdefghijklmnopqrstuvwxyz">
+    <input type="text" id="alphabetInput" value="abcdefghijklmnopqrstuvwxyz">
     <button id="alphabetInputReset">Reset</button>
   </div>
 
@@ -115,6 +115,9 @@
       alphabetInput.value = defaultAlphabet;
       analyzeSentence();
     });
+
+    sentenceInput.addEventListener("input", analyzeSentence);
+    alphabetInput.addEventListener("input", analyzeSentence);
 
     function workerCode() {
       // NOTE: This function is run in a web worker, so it can't access the DOM or global variables.
