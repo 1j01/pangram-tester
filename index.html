@@ -234,7 +234,11 @@
       const missingLettersCount = missingLetters.length;
 
       if (missingLettersCount === 0) {
-        statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
+        if (sentenceLettersCount === alphabet.length) {
+          statusOutput.innerHTML = "<span class='valid-pangram'>Perfect pangram!</span>";
+        } else {
+          statusOutput.innerHTML = "<span class='valid-pangram'>Valid pangram!</span>";
+        }
       } else {
         statusOutput.innerHTML = `<span class='missing-letters'>Missing letters (${missingLettersCount}): ${missingLetters.join(" ")}</span>`;
       }
