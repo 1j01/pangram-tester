@@ -168,10 +168,11 @@
 
     worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
 
-    function highlightFirstOccurrences(sentence, alphabet, targetElement) {
+    function highlightFirstOccurrences(sentence, alphabet) {
       const lowercaseSentence = sentence.toLocaleLowerCase();
       const lettersFound = [];
       let sentenceLettersCount = 0;
+      const fragment = document.createDocumentFragment();
       for (let i = 0; i < lowercaseSentence.length; i++) {
         const char = lowercaseSentence.charAt(i);
         if (alphabet.includes(char) && !lettersFound.includes(char)) {
@@ -179,15 +180,15 @@
           const span = document.createElement("span");
           span.textContent = sentence.charAt(i);
           span.className = "highlight";
-          targetElement.appendChild(span);
+          fragment.appendChild(span);
         } else {
-          targetElement.appendChild(document.createTextNode(sentence.charAt(i)));
+          fragment.appendChild(document.createTextNode(sentence.charAt(i)));
         }
         if (alphabet.includes(char)) {
           sentenceLettersCount++;
         }
       }
-      return { sentenceLettersCount, lettersFound };
+      return { sentenceLettersCount, lettersFound, fragment };
     }
 
     function analyzeSentence() {
@@ -209,7 +210,8 @@
         return; // If input is empty, leave the results empty
       }
 
-      const { sentenceLettersCount, lettersFound } = highlightFirstOccurrences(sentence, alphabet, sentenceOutput);
+      const { sentenceLettersCount, lettersFound, fragment } = highlightFirstOccurrences(sentence, alphabet);
+      sentenceOutput.appendChild(fragment);
 
       const missingLetters = [...alphabet].filter(letter => !lettersFound.includes(letter));
       const missingLettersCount = missingLetters.length;
