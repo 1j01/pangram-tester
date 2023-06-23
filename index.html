@@ -49,8 +49,13 @@
       flex: 1;
     }
 
-    .highlight {
-      background-color: yellow;
+    .first-occurrence {
+      /* background-color: yellow; */
+      font-weight: bold;
+    }
+
+    .redundant-letter {
+      color: #a00000;
     }
 
     .valid-pangram {
@@ -186,7 +191,12 @@
           lettersFound.push(char);
           const span = document.createElement("span");
           span.textContent = text.charAt(i);
-          span.className = "highlight";
+          span.className = "first-occurrence";
+          fragment.appendChild(span);
+        } else if (alphabet.includes(char)) {
+          const span = document.createElement("span");
+          span.textContent = text.charAt(i);
+          span.className = "redundant-letter";
           fragment.appendChild(span);
         } else {
           fragment.appendChild(document.createTextNode(text.charAt(i)));
