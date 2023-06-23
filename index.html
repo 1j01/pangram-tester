@@ -159,7 +159,7 @@
         }
         const { alphabet, sentence } = event.data;
         const suggestions = suggestWords(alphabet, sentence);
-        postMessage(suggestions);
+        postMessage({ suggestions, forSentence: sentence });
       };
     }
     const workerURL = URL.createObjectURL(new Blob([`(${workerCode})()`], { type: 'application/javascript' }));
@@ -167,9 +167,6 @@
     const worker = new Worker(workerURL);
 
     worker.postMessage({ dictionaryURL: new URL("words_alpha.txt", `${location.protocol}//${location.host}${location.pathname}`).href });
-
-    let currentSearchId = 0;
-
 
     function analyzeSentence() {
       const sentenceInput = document.getElementById("sentenceInput");
@@ -187,8 +184,6 @@
       sentenceOutput.innerHTML = ""; // Clear previous output
       statusOutput.innerHTML = ""; // Clear previous status
       suggestionsList.innerHTML = ""; // Clear previous suggestions
-
-      ++currentSearchId; // Ignore results from previous searches (if they come in late)
 
       if (sentence.trim() === "") {
         return; // If input is empty, leave the results empty
@@ -223,17 +218,16 @@
 
       statusOutput.innerHTML += "<br>Letters in sentence: " + sentenceLettersCount;
 
-      const searchId = ++currentSearchId;
-
       // The worker is already created.
       // This will replace the previous message handler.
       // TODO: restructure so the handler is only set once
       worker.onmessage = function (event) {
-        if (searchId !== currentSearchId) {
+        const { suggestions, forSentence } = event.data;
+
+        if (forSentence !== sentence) {
           return; // Ignore result if sentence changed
         }
 
-        const suggestions = event.data;
         for (const { word } of suggestions) {
           const li = document.createElement("li");
           li.textContent = word;
