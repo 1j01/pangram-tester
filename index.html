@@ -113,14 +113,17 @@
       // but it is treated as a string, and loaded in an isolated context.
 
       let dictionary = [];
-      function suggestWords(alphabet, sentence) {
+      let latestRequestId = 0;
+      async function suggestWords(alphabet, sentence) {
+        const thisRequestId = ++latestRequestId;
         const missingLetters = new Set([...alphabet.toLocaleLowerCase()].filter(letter => !sentence.toLocaleLowerCase().includes(letter)));
         const suggestions = [];
         const redundantLetterPenalty = 0.2;
         const maxSuggestions = 30;
         let scoreFilter = 0;
 
-        for (const word of dictionary) {
+        for (let wordIndex = 0; wordIndex < dictionary.length; wordIndex++) {
+          const word = dictionary[wordIndex];
           let score = 0;
 
           for (let i = 0; i < word.length; i++) {
@@ -153,12 +156,26 @@
               scoreFilter = suggestions[suggestions.length - 1].score;
             }
           }
+
+          // Yield to the event loop so a new message can be received
+          // and this loop can be aborted if necessary
+          // The dictionary is very large, so if this modulo is too small,
+          // it will be too slow, due to the delay of setTimeout.
+          // If it's too large, typing will accrue an indefinitely large work queue.
+          if (wordIndex % 50000 === 0) {
+            await new Promise(resolve => setTimeout(resolve, 0));
+            // await Promise.resolve(); // fails to yield
+          }
+          // Abort if a new request came in
+          if (thisRequestId !== latestRequestId) {
+            return;
+          }
         }
 
         return suggestions;
       }
 
-      onmessage = function (event) {
+      onmessage = async function (event) {
         if (event.data.dictionaryURL) {
           // Load the dictionary file
           fetch(event.data.dictionaryURL)
@@ -169,7 +186,10 @@
           return;
         }
         const { alphabet, sentence } = event.data;
-        const suggestions = suggestWords(alphabet, sentence);
+        const suggestions = await suggestWords(alphabet, sentence);
+        if (!suggestions) {
+          return; // Ignore result if aborted
+        }
         postMessage({ suggestions, forSentence: sentence });
       };
     }
