@@ -315,20 +315,34 @@
       svg.setAttribute("preserveAspectRatio", "none");
 
       const redundantLetters = sentenceOutput.querySelectorAll(".redundant-letter");
-      const firstOccurrences = sentenceOutput.querySelectorAll(".first-occurrence");
       for (const redundantLetter of redundantLetters) {
         const xOnPage = redundantLetter.offsetLeft + redundantLetter.offsetWidth / 2;
         const x = xOnPage - left;
 
-        const firstOccurrence = [...firstOccurrences].find(firstOccurrence => firstOccurrence.textContent.toLocaleLowerCase() === redundantLetter.textContent.toLocaleLowerCase());
-        const firstOccurrenceXOnPage = firstOccurrence.offsetLeft + firstOccurrence.offsetWidth / 2;
-        const firstOccurrenceX = firstOccurrenceXOnPage - left;
+        // First of this letter:
+        // [...firstOccurrences].find(firstOccurrence => firstOccurrence.textContent.toLocaleLowerCase() === redundantLetter.textContent.toLocaleLowerCase());
+        // Previous of this letter:
+        let priorLetter = redundantLetter;
+        while (priorLetter.previousSibling) {
+          priorLetter = priorLetter.previousSibling;
+          if (priorLetter.nodeType === Node.TEXT_NODE) {
+            continue;
+          }
+          if (
+            priorLetter.matches(".first-occurrence, .redundant-letter") &&
+            priorLetter.textContent.toLocaleLowerCase() === redundantLetter.textContent.toLocaleLowerCase()
+          ) {
+            break;
+          }
+        }
+        const priorXOnPage = priorLetter.offsetLeft + priorLetter.offsetWidth / 2;
+        const priorX = priorXOnPage - left;
 
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        const midX = (x + firstOccurrenceX) / 2;
+        const midX = (x + priorX) / 2;
         const strokeWidth = 2;
-        const midY = Math.min(20 + Math.abs(x - firstOccurrenceX) / 2, (height - strokeWidth) * 2);
-        path.setAttribute("d", `M${x} 0 Q${midX} ${midY} ${firstOccurrenceX} 0`);
+        const midY = Math.min(20 + Math.abs(x - priorX) / 2, (height - strokeWidth) * 2);
+        path.setAttribute("d", `M${x} 0 Q${midX} ${midY} ${priorX} 0`);
         path.setAttribute("stroke", getComputedStyle(redundantLetter).color);
         path.setAttribute("stroke-width", strokeWidth);
         path.setAttribute("fill", "none");
