@@ -87,6 +87,7 @@
   <div class="alphabet-input">
     <label for="alphabetInput">Alphabet: </label>
     <input type="text" id="alphabetInput" oninput="analyzeSentence()" value="abcdefghijklmnopqrstuvwxyz">
+    <button id="alphabetInputReset">Reset</button>
   </div>
 
   <div class="output">
@@ -106,6 +107,14 @@
     const statusOutput = document.getElementById("statusOutput");
     const alphabetInput = document.getElementById("alphabetInput");
     const suggestionsList = document.getElementById("suggestions");
+    const alphabetInputReset = document.getElementById("alphabetInputReset");
+
+    // getAttribute might be better than .value in case form is persisted across page loads
+    const defaultAlphabet = alphabetInput.getAttribute("value");
+    alphabetInputReset.addEventListener("click", () => {
+      alphabetInput.value = defaultAlphabet;
+      analyzeSentence();
+    });
 
     function workerCode() {
       // NOTE: This function is run in a web worker, so it can't access the DOM or global variables.
@@ -274,6 +283,8 @@
       const alphabet = alphabetInput.value.toLocaleLowerCase();
       const lettersMissing = [];
 
+      alphabetInputReset.disabled = alphabet === defaultAlphabet;
+
       sentenceOutput.innerHTML = ""; // Clear previous output
       statusOutput.innerHTML = ""; // Clear previous status
       // suggestionsList.innerHTML = ""; // Clear previous suggestions
@@ -399,6 +410,15 @@
     }
 
     window.addEventListener("resize", graphRedundancies);
+
+    // This is to gray out the Reset button for the alphabet input,
+    // and also in case the form is persisted across page loads.
+    // For the latter purpose, this needs an event.
+    // To test, type something into the alphabet input,
+    // then close the tab and reopen it with Ctrl+Shift+T.
+    window.addEventListener("load", () => {
+      analyzeSentence();
+    });
   </script>
 </body>
 
