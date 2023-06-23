@@ -262,7 +262,13 @@
           plusButton.textContent = "+";
           plusButton.addEventListener("click", function () {
             const separator = sentence.trim() && !sentence.endsWith(" ") ? " " : "";
-            sentenceInput.value = sentence + separator + word;
+            // sentenceInput.value = sentence + separator + word; // breaks undo history
+            // Inserting at the cursor could be good, but separator logic is for the end of the sentence,
+            // so place the cursor at the end, for now at least.
+            // It's simpler to think about, so it might be better anyway.
+            sentenceInput.focus();
+            sentenceInput.setSelectionRange(sentenceInput.value.length, sentenceInput.value.length);
+            document.execCommand("insertText", false, separator + word);
             analyzeSentence();
           });
           li.appendChild(plusButton);
